@@ -162,4 +162,4 @@ cython_debug/
 
 archive/
 
-model3.pt
+*.pt
