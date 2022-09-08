@@ -1,28 +1,33 @@
-from model import NeuralNetwork
+from model import LinearNet
+import torch
+import torch.nn as nn
+
+X = torch.tensor([[1], [2], [3], [4]], dtype=torch.float32)
+Y = torch.tensor([[2], [4], [6], [8]], dtype=torch.float32)
+
+X_test = torch.tensor([5], dtype=torch.float32)
+
 
 
 n_epochs = 20
+learning_rate = 0.01
 
-model = NeuralNetwork()
+model = LinearNet(10)
+
+loss = nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
 for epoch in range(1, n_epochs):
-    loss_train = 0.0
-    for imgs, numeric_features_, Y in train_loader:
-        imgs = imgs.to(device)
-        numeric_features = numeric_features.to(device)
-        Y = Y.to(device)
+    y_pred = model(X)
 
-        output = model(imgs, numeric_features)
+    l = loss(Y, y_pred)
 
-        loss = loss_fn(output, Y)
+    l.backward()
 
-        # l2 Regularization
-        l2_lambda = 0.001
-        l2_norm = sum(p.pow(2).sum() for p in model.parameters())
-        loss = loss+l2_lambda*l2_norm
+    optimizer.step()
 
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+    if epoch % 10  == 0:
+        [w, b] = model.parameters()
+        print(f"epoch {epoch+1}: w = {w[0][0].item( ):.3f}, loss = {l:.8f}")
 
-        loss_train += loss.item()
+print(f'Prediction after training: f(5) = {model(X_test).item():.3f}')

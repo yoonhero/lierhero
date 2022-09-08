@@ -63,14 +63,18 @@ if __name__ == '__main__':
     for i in range(3):
         lie = False
 
-        with keyboard.Events() as events:
-            for event in events:
-                if event.key == keyboard.Key.space:
-                    lie = True
-                    print("LIE")
-                    break
-                else:
-                    break
+        # with keyboard.Events() as events:
+        #     for event in events:
+        #         if event.key == keyboard.Key.space:
+        #             lie = True
+        #             print("LIE")
+        #             break
+        #         else:
+        #             break
+        # key = cv2.waitKey()
+
+        # if key == ord('a'):
+        #     lie = True 
 
 
         img = cam.get_image()
@@ -87,6 +91,8 @@ if __name__ == '__main__':
             time.sleep(0.1)
 
         ts = math.floor(get_timestamp())
+
+        print("\rts")
         
         filepath = f"./dataset/lie/{ts}.jpg" if lie else f"./dataset/not_lie/{ts}.jpg"
 

@@ -1,10 +1,35 @@
+from re import M
 import torch
 import torch.nn as nn
+from fastai.vision.all import *
 
 
+# Linear Data Net for Sensor INPUT
+class LinearNet(nn.Module):
+    def __init__(self, input_size):
+        super(LinearNet, self).__init__()
+
+        self.input_size = input_size
+
+        self.linear_relu_stack = nn.Sequential(
+            nn.Linear(self.input_size, 10),
+            nn.ReLU(),
+            nn.Linear(10, 10),
+            nn.ReLU(),
+            nn.Linear(10, 2),
+
+        )
+
+    def forward(self, x):
+        out = self.linear_relu_stack(x)
+
+        return out
+
+# Previous Multi Data Net 
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
+        
         self.image_features_ = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=5, stride=2, padding=2),
             nn.ReLu(inplace=True),
@@ -44,3 +69,6 @@ class NeuralNetwork(nn.Module):
         z = torch.cat((x, y), 1)
         z = self.combined_featuers_(z)
         return z
+
+
+
