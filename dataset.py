@@ -4,6 +4,7 @@ from torchvision import transforms, utils
 import pandas as pd
 from PIL import Image
 import numpy as np
+from skimage import io
 
 import os
 
@@ -16,7 +17,7 @@ class WithFaceLandmarksDataset(Dataset):
         self.data_csv = pd.read_csv(csv_file)
         self.transform = transform
 
-        self.fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D, flip_input=False)
+        self.fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D, flip_input=False, device="cuda")
 
     def __len__(self):
         return len(self.data_csv)
@@ -48,5 +49,18 @@ class WithFaceLandmarksDataset(Dataset):
 def dataprocessing_get_landmarks(csv_file):
     data = pd.read_csv(csv_file)
 
-    for i, data in enumerate(data[])
+    new_row = np.array([], dtype=np.float32)
 
+    fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D, flip_input=False, device="cuda")
+
+    for idx, image in enumerate(data["img"]):
+        input_ = io.imread(image)
+        preds = fa.get_landmarks_from_image(input_)
+
+        new_row.append(preds)
+
+    temp_df = pd.DataFrame(new_row, columns=["landmarks"])
+
+    result = pd.concat([data, temp_df], axis=1)
+
+    result.to_csv("processed_dataset.csv")
