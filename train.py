@@ -3,6 +3,9 @@ from model import LierDetectModel
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
+import os
+import torchsummary
+from torchviz import make_dot
 
 
 def train_loop(dataloader, model, loss_fn, optimizer):
@@ -60,6 +63,10 @@ def main():
 
     model = LierDetectModel()
 
+    # _x = torch.zeros(1, 2, 10)
+    # torchsummary.summary(model, ((3, 784, 1), (10, 1)))
+    print(model)
+
     loss_fn = nn.BCELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
@@ -69,6 +76,14 @@ def main():
         test_loop(test_dataloader, model, loss_fn)
 
     print("Done!")
+
+    PATH = "./weights"
+    torch.save(model, os.path.join(PATH, "model.pt"))
+
+    #     torch.save({
+    #     'model': model.state_dict(),
+    #     'optimizer': optimizer.state_dict()
+    # }, PATH + 'all.tar')
 
 
 if __name__ == "__main__":

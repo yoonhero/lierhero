@@ -33,20 +33,21 @@ class FaceLandmarksDatasetWithMediapipe(Dataset):
         if torch.is_tensor(idx):
             idx = idx.to_list()
 
-        img_name = self.data_csv.iloc[idx, 0]
+        img_name = self.data_csv["image"].values[idx]  
         image = Image.open(img_name)
 
         temp_landmark = self.face_detector.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
-        np_landmark = np.array([[landmark.x, landmark.y, landmark.z] for landmark in list(temp_landmark.multi_face_landmarks[0].landmark)])
+        tensor_landmark = torch.tensor([[landmark.x, landmark.y, landmark.z] for landmark in list(temp_landmark.multi_face_landmarks[0].landmark)], dtype=torch.float32)
 
-        heart_rate = self.data_csv.iloc[idx, 1]
-        lie = self.data_csv.iloc[idx, 2]
+
+        heart_rate = torch.tensor(self.data_csv["heart_rate"].values[idx], dtype=torch.float32)
+        lie = torch.tensor(self.data_csv["lie"].values[idx], dtype=torch.float32)
 
         # if self.transform:
         #     sample = self.transform(sample)
 
-        return (np_landmark, heart_rate), lie
+        return (tensor_landmark, heart_rate), lie
         
 
 

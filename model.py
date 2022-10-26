@@ -9,30 +9,28 @@ class LierDetectModel(nn.Module):
         super().__init__()
 
         self.image_features_ = nn.Sequential(
-        nn.flatten(),
         nn.Linear(478*3, 400),
         nn.ReLU(),
         nn.Linear(400, 200),
         nn.ReLU(),
          nn.Linear(200, 100),
          nn.ReLU(),
-        nn.Linear(100, 2),
+        nn.Linear(100, 5),
         )
 
         self.numeric_features_ = nn.Sequential(
             nn.Linear(10,5),
             nn.ReLU(),
             nn.Linear(5, 5),
-            nn.ReLU(),
-            nn.Linear(5, 2),
         )
     
         self.combined_featuers_ = nn.Sequential(
-            nn.Linear(4, 1),
+            nn.Linear(10, 1),
             nn.Sigmoid()
         )
 
     def forward(self, x1, x2):
+        x1 = torch.flatten(x1, start_dim=1)
         x1 = self.image_features_(x1)
         x2 = self.numeric_features_(x2)
 
