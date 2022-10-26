@@ -5,11 +5,55 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 from skimage import io
+import cv2
 
 import os
 
 import face_alignment
 
+import mediapipe as mp
+
+
+class FaceLandmarksDatasetWithMediapipe(Dataset):
+    def __init__(self, csv_file):
+        self.data_csv = pd.read_csv(csv_file)
+
+        # TODO: Transform Image
+        # transform = transforms(
+
+        # )
+
+        self.mp_face_mesh = mp.solutions.face_mesh
+
+    def __len__(self):
+        return len(self.data_csv)
+
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.to_list()
+
+        img_name = self.data_csv.iloc[idx, 0]
+        image = cv2.imread(img_name)
+
+        with self.mp_face_mesh.FaceMesh(
+            static_image_mode=True,
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.5
+        ) as face_mesh:
+            results = self.face_mesh(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+
+            face_landmarks = results.multi_face_landmarks[0]
+
+
+        heart_rate = self.data_csv.iloc[idx, 1]
+        lie = self.data_csv.iloc[idx, 2]
+
+        if self.transform:
+            sample = self.transform(sample)
+
+        return face_landmarks, heart_rate, lie
+        
 
 
 class WithFaceLandmarksDataset(Dataset):
@@ -64,3 +108,14 @@ def dataprocessing_get_landmarks(csv_file):
     result = pd.concat([data, temp_df], axis=1)
 
     result.to_csv("processed_dataset.csv")
+
+
+if __name__ == "__main__":
+    fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D, flip_input=False, device="cpu")
+
+    input_ = io.imread("./test.jpeg")
+
+    preds = fa.get_landmarks_from_image(input_)
+
+    print(preds, type(preds))
+

@@ -3,8 +3,44 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+import numpy as np
 
+class LierDetectModel(nn.Module):
+    def __init__(self):
+        super().__init__()
 
+        self.layer1 = nn.Sequential(
+        nn.flatten(),
+        nn.Linear(478*3, 400),
+        nn.ReLU(),
+        nn.Linear(400, 200),
+        nn.ReLU(),
+         nn.Linear(200, 100),
+         nn.ReLU(),
+        nn.Linear(100, 2),
+        )
+
+        self.layer2 = nn.Sequential(
+            nn.Linear(10,5),
+            nn.ReLU(),
+            nn.Linear(5, 5),
+            nn.ReLU(),
+            nn.Linear(5, 2),
+        )
+    
+        self.layer3 = nn.Sequential(
+            nn.Linear(4, 1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x1, x2):
+        x1 = self.layer1(x1)
+        x2 = self.layer2(x2)
+
+        x = np.concat(x1, x2)
+        x = self.layer3(x)
+
+        return x
 
 
 
