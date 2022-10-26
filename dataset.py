@@ -24,6 +24,7 @@ class FaceLandmarksDatasetWithMediapipe(Dataset):
         # )
 
         self.mp_face_mesh = mp.solutions.face_mesh
+        self.face_detector = self.mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1, refine_landmarks=True, min_detection_confidence=0.5)
 
     def __len__(self):
         return len(self.data_csv)
@@ -33,26 +34,19 @@ class FaceLandmarksDatasetWithMediapipe(Dataset):
             idx = idx.to_list()
 
         img_name = self.data_csv.iloc[idx, 0]
-        image = cv2.imread(img_name)
+        image = Image.open(img_name)
 
-        with self.mp_face_mesh.FaceMesh(
-            static_image_mode=True,
-            max_num_faces=1,
-            refine_landmarks=True,
-            min_detection_confidence=0.5
-        ) as face_mesh:
-            results = self.face_mesh(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        temp_landmark = self.face_detector.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
-            face_landmarks = results.multi_face_landmarks[0]
-
+        np_landmark = np.array([[landmark.x, landmark.y, landmark.z] for landmark in list(temp_landmark.multi_face_landmarks[0].landmark)])
 
         heart_rate = self.data_csv.iloc[idx, 1]
         lie = self.data_csv.iloc[idx, 2]
 
-        if self.transform:
-            sample = self.transform(sample)
+        # if self.transform:
+        #     sample = self.transform(sample)
 
-        return face_landmarks, heart_rate, lie
+        return (np_landmark, heart_rate), lie
         
 
 

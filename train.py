@@ -1,33 +1,75 @@
-from model import LinearNet
+from dataset import FaceLandmarksDatasetWithMediapipe
+from model import LierDetectModel
 import torch
 import torch.nn as nn
-
-X = torch.tensor([[1], [2], [3], [4]], dtype=torch.float32)
-Y = torch.tensor([[2], [4], [6], [8]], dtype=torch.float32)
-
-X_test = torch.tensor([5], dtype=torch.float32)
+from torch.utils.data import DataLoader, random_split
 
 
+def train_loop(dataloader, model, loss_fn, optimizer):
+    size = len(dataloader.dataset)
 
-n_epochs = 20
-learning_rate = 0.01
+    for batch, (X, y) in enumerate(dataloader):
+        landmark, heart_rate = X
+        pred = model(landmark, heart_rate)
+        loss = loss_fn(pred, y)
 
-model = LinearNet(10)
+        # BackPropagation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
-loss = nn.MSELoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+        if batch % 100 == 0:
+            loss, current = loss.item(), batch * len(X)
+            print(f"loss: {loss:>7f} [{current:>5d}/{size:>5d}]")
 
-for epoch in range(1, n_epochs):
-    y_pred = model(X)
 
-    l = loss(Y, y_pred)
+def test_loop(dataloader, model, loss_fn):
+    size = len(dataloader.dataset)
+    num_batches = len(dataloader)
+    test_loss, correct = 0, 0
 
-    l.backward()
+    with torch.no_grad():
+        for (landmark, heart_rate), y in dataloader:
+            pred = model(landmark, heart_rate)
+            test_loss += loss_fn(pred, y).item()
+            correct += (pred.argmax(1) == y).type(torch.float).sum().item()
 
-    optimizer.step()
+    test_loss /= num_batches
+    correct /= size
+    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
-    if epoch % 10  == 0:
-        [w, b] = model.parameters()
-        print(f"epoch {epoch+1}: w = {w[0][0].item( ):.3f}, loss = {l:.8f}")
 
-print(f'Prediction after training: f(5) = {model(X_test).item():.3f}')
+
+def main():
+    dataset = FaceLandmarksDatasetWithMediapipe(csv_file="./data.csv")
+
+    dataset_size = len(dataset)
+    train_size = int(dataset_size * 0.8)
+    test_size = dataset_size - train_size
+    # validation_size = dataset_size - train_size - validation_size
+
+    train_dataset, validation_dataset, test_dataset = random_split(dataset, [train_size, test_size])
+
+    train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True, drop_last=True)
+    # validation_dataloader = DataLoader(validation_dataset, batch_size=4, shuffle=True, drop_last=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=4, shuffle=True, drop_last=True)
+
+
+    n_epochs = 20
+    learning_rate = 0.01
+
+    model = LierDetectModel()
+
+    loss_fn = nn.BCELoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+
+    for epoch in range(1, n_epochs):
+        print(f"Epoch {epoch+1}\n-------------------------------")
+        train_loop(train_dataloader, model, loss_fn, optimizer)
+        test_loop(test_dataloader, model, loss_fn)
+
+    print("Done!")
+
+
+if __name__ == "__main__":
+    main()
