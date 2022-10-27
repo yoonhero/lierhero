@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Collect data for LIERHERO</title>
+    </head>
+    <body>
+        <section class="content">
+            <header>{% block header %}{% endblock %}</header>
+
+            <img src="{{url_for('video')}}" width="50%" alt="" />
+
+            <button onclick="recording_start()">Recording</button>
+            <button onclick="recording_end()">Stop Recording</button>
+        </section>
+
+        <script>
+            function recording_start() {
+                fetch("/rec/1")
+                    .then((response) => response.text())
+                    .then((data) => console.log(data));
+            }
+
+            function recording_end() {
+                fetch("/rec/0")
+                    .then((response) => response.text())
+                    .then((data) => console.log(data));
+            }
+        </script>
+    </body>
+</html>
