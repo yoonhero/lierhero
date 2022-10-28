@@ -4,6 +4,17 @@ import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
 
+
+## TODO: Conv Net
+# class LierDetectModelWithCNN(nn.Module):
+#     def __init__(self):
+#         super().__init__()
+
+#         self.image_features_ = nn.Sequential(
+#             nn.Conv2d(in_channels=3, out_channels=16, kernel_size=9, padding=4),
+
+#         )
+
 class LierDetectModel(nn.Module):
     def __init__(self):
         super().__init__()

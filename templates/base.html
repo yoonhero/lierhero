@@ -6,43 +6,69 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Collect data for LIERHERO</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='reset.css') }}" />
     </head>
     <body>
-        <section class="content">
-            <header>{% block header %}{% endblock %}</header>
+        <main>
+            <section class="content">
+                <h1>R&E LierHero</h1>
+                <img src="{{url_for('video')}}" width="50%" alt="" />
 
-            <img src="{{url_for('video')}}" width="50%" alt="" />
+                <div class="btn_container">
+                    <button class="btn rec_start" onclick="recording_start()">Recording</button>
+                    <button class="btn rec_end hidden" onclick="recording_end()">Stop Recording</button>
 
-            <button onclick="recording_start()">Recording</button>
-            <button onclick="recording_end()">Stop Recording</button>
-
-            <button onclick="lie_start()">Lie Start</button>
-            <button onclick="lie_end()">Lie END</button>
-        </section>
+                    <button class="btn lie_start" onclick="lie_start()">Lie Start</button>
+                    <button class="btn lie_end hidden" onclick="lie_end()">Lie END</button>
+                </div>
+            </section>
+        </main>
 
         <script>
+            rec_start_btn = document.querySelector(".rec_start");
+            rec_end_btn = document.querySelector(".rec_end");
+            lie_start_btn = document.querySelector(".lie_start");
+            lie_end_btn = document.querySelector(".lie_end");
+
+            function toggle_rec() {
+                rec_start_btn.classList.toggle("hidden");
+                rec_end_btn.classList.toggle("hidden");
+            }
+
+            function toggle_lie() {
+                lie_start_btn.classList.toggle("hidden");
+                lie_end_btn.classList.toggle("hidden");
+            }
+
             function recording_start() {
                 fetch("/rec/1")
                     .then((response) => response.text())
                     .then((data) => console.log(data));
+
+                toggle_rec();
             }
 
             function recording_end() {
                 fetch("/rec/0")
                     .then((response) => response.text())
                     .then((data) => console.log(data));
+
+                toggle_rec();
             }
 
             function lie_start() {
                 fetch("/lie/1")
                     .then((response) => response.text())
                     .then((data) => console.log(data));
+                toggle_lie();
             }
 
             function lie_end() {
                 fetch("/lie/0")
                     .then((response) => response.text())
                     .then((data) => console.log(data));
+                toggle_lie();
             }
         </script>
     </body>

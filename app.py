@@ -43,9 +43,7 @@ def generate_frames():
             ## TODO: Heart Rate
             heart_rate = [1, 2, 3, 5, 6, 7, 8,9 , 10, 1]
             heart_rate = "|".join([str(v) for v in heart_rate])
-            print(heart_rate)
 
-            # TODO: Pandas LIST Save
             new_row = pd.DataFrame({"image": filepath, "heart_rate":heart_rate, "lie": int(lie)}, index=[len(dataset)])
             dataset.add_row(new_row)
 
