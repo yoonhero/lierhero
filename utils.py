@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib as mpl
 import matplotlib.font_manager as fm
+import os
 
 class LineChart(object):
     def __init__(self):
@@ -21,3 +22,12 @@ class LineChart(object):
 
         plt.plot(self.x, self.y)
         plt.show()
+
+
+
+def create_directory():
+    if not os.path.exists("./dataset"):
+        os.makedirs("./dataset")
+        os.makedirs("./dataset/lie")
+        os.makedirs("./dataset/not_lie")
+            

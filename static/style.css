@@ -1,12 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Gugi&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+
 main {
     width: 100vw;
-    height: 100vw;
-    position: fixed;
-    top: 0;
+    background-color: #eff5f7;
 }
 
 .content {
     width: 100%;
+    
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -15,9 +18,20 @@ main {
     padding-bottom: 2rem;
 }
 
+
+.title {
+    font-family: 'Gugi', cursive;
+    font-size: 70px;
+    font-weight: 500;    
+    color: #1c474d;
+}
+
+
+
 img {
     width: 80%;
-    border-radius: 10px;
+    max-width: 640px;
+    border-radius: 30px;
 }
 
 .btn_container {
@@ -29,9 +43,19 @@ img {
     padding: 10px 20px;
     color: white;
     border: none;
-    background-color: skyblue;
-    border-radius: 10px;
+    background-color: #14cdc8;
+    border-radius: 20px;
     margin: 20px;
+    font-family: 'Jua', sans-serif;
+    font-size: 30px;
+    font-weight: 400;
+    transition: all .2s ease-in-out;
+}
+
+
+.btn:hover{
+    background-color: #006992;
+    transform: scale(1.1);
 }
 
 .hidden {

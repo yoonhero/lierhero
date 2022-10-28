@@ -3,7 +3,7 @@ from flask import (
 )
 import time
 from collect_data import DataSet, get_timestamp
-from utils import LineChart
+from utils import LineChart, create_directory
 from webcam import Webcam
 import math
 import cv2
@@ -34,6 +34,8 @@ def generate_frames():
         frame = cv2.flip(frame, 1)
         if rec_condition:
             ts = math.floor(get_timestamp())
+
+            create_directory()
             
             filepath = f"./dataset/lie/{ts}.jpg" if lie else f"./dataset/not_lie/{ts}.jpg"
 
@@ -41,7 +43,7 @@ def generate_frames():
 
 
             ## TODO: Heart Rate
-            heart_rate = [1, 2, 3, 5, 6, 7, 8,9 , 10, 1]
+            heart_rate = [240, 230, 250, 210, 220, 230, 250,285 , 270, 250]
             heart_rate = "|".join([str(v) for v in heart_rate])
 
             new_row = pd.DataFrame({"image": filepath, "heart_rate":heart_rate, "lie": int(lie)}, index=[len(dataset)])

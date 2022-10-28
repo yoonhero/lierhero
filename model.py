@@ -29,6 +29,7 @@ class LierDetectModel(nn.Module):
         nn.Linear(100, 5),
         )
 
+        ## TODO: RNN Numeric features
         self.numeric_features_ = nn.Sequential(
             nn.Linear(10,5),
             nn.ReLU(),

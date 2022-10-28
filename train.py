@@ -5,7 +5,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 import os
 import torchsummary
-from torchviz import make_dot
+# from torchviz import make_dot
 
 
 def train_loop(dataloader, model, loss_fn, optimizer):

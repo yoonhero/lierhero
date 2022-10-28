@@ -5,10 +5,11 @@ from webcam import Webcam
 # from arduino import ArduinoInput, get_usb_device
 from datetime import datetime
 import math
-import cv2
+import cv2 
 # import keyboard
 # from pygame.locals import *
 # from pynput import keyboard
+import os
 
 
 def get_timestamp():
@@ -75,6 +76,13 @@ class CollectDataTool():
             time.sleep(0.1)
 
         ts = math.floor(get_timestamp())
+        
+        if not os.path.exists("./dataset"):
+            os.makedirs("./dataset")
+            os.makedirs("./dataset/lie")
+            os.makedirs("./dataset/not_lie")
+            
+
             
         filepath = f"./dataset/lie/{ts}.jpg" if self.lie else f"./dataset/not_lie/{ts}.jpg"
 
