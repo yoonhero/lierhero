@@ -21,4 +21,3 @@ class LineChart(object):
 
         plt.plot(self.x, self.y)
         plt.show()
-

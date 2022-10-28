@@ -9,7 +9,7 @@ import cv2
 
 import os
 
-import face_alignment
+# import face_alignment
 
 import mediapipe as mp
 
@@ -23,8 +23,8 @@ class FaceLandmarksDatasetWithMediapipe(Dataset):
 
         # )
 
-        self.mp_face_mesh = mp.solutions.face_mesh
-        self.face_detector = self.mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1, refine_landmarks=True, min_detection_confidence=0.5)
+        # self.mp_face_mesh = mp.solutions.face_mesh
+        # self.face_detector = self.mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1, refine_landmarks=True, min_detection_confidence=0.5)
 
     def __len__(self):
         return len(self.data_csv)
@@ -40,14 +40,22 @@ class FaceLandmarksDatasetWithMediapipe(Dataset):
 
         tensor_landmark = torch.tensor([[landmark.x, landmark.y, landmark.z] for landmark in list(temp_landmark.multi_face_landmarks[0].landmark)], dtype=torch.float32)
 
-
-        heart_rate = torch.tensor(self.data_csv["heart_rate"].values[idx], dtype=torch.float32)
+        rear_heart_rate = [int(v) for v in self.data_csv["heart_rate"][idx].split("|")]
+        heart_rate = torch.tensor(rear_heart_rate, dtype=torch.float32)
         lie = torch.tensor(self.data_csv["lie"].values[idx], dtype=torch.float32)
 
         # if self.transform:
         #     sample = self.transform(sample)
 
-        return (tensor_landmark, heart_rate), lie
+        return ("", heart_rate), lie
+
+
+if __name__ == "__main__":
+    dataset = FaceLandmarksDatasetWithMediapipe("data.csv")
+
+    X, lie = dataset[0]
+    print(X, lie)
+
         
 
 
@@ -105,12 +113,12 @@ def dataprocessing_get_landmarks(csv_file):
     result.to_csv("processed_dataset.csv")
 
 
-if __name__ == "__main__":
-    fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D, flip_input=False, device="cpu")
+# if __name__ == "__main__":
+#     fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D, flip_input=False, device="cpu")
 
-    input_ = io.imread("./test.jpeg")
+#     input_ = io.imread("./test.jpeg")
 
-    preds = fa.get_landmarks_from_image(input_)
+#     preds = fa.get_landmarks_from_image(input_)
 
-    print(preds, type(preds))
+#     print(preds, type(preds))
 

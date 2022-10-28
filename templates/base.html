@@ -5,6 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Collect data for LIERHERO</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
     </head>
     <body>
         <section class="content">
@@ -14,6 +15,9 @@
 
             <button onclick="recording_start()">Recording</button>
             <button onclick="recording_end()">Stop Recording</button>
+
+            <button onclick="lie_start()">Lie Start</button>
+            <button onclick="lie_end()">Lie END</button>
         </section>
 
         <script>
@@ -25,6 +29,18 @@
 
             function recording_end() {
                 fetch("/rec/0")
+                    .then((response) => response.text())
+                    .then((data) => console.log(data));
+            }
+
+            function lie_start() {
+                fetch("/lie/1")
+                    .then((response) => response.text())
+                    .then((data) => console.log(data));
+            }
+
+            function lie_end() {
+                fetch("/lie/0")
                     .then((response) => response.text())
                     .then((data) => console.log(data));
             }

@@ -31,6 +31,7 @@ def generate_frames():
             
         ## read the camera frame
         frame = cam.get_image()
+        frame = cv2.flip(frame, 1)
         if rec_condition:
             ts = math.floor(get_timestamp())
             
@@ -38,8 +39,14 @@ def generate_frames():
 
             cv2.imwrite(filepath, frame)
 
+
+            ## TODO: Heart Rate
+            heart_rate = [1, 2, 3, 5, 6, 7, 8,9 , 10, 1]
+            heart_rate = "|".join([str(v) for v in heart_rate])
+            print(heart_rate)
+
             # TODO: Pandas LIST Save
-            new_row = pd.DataFrame({"img": filepath, "heart_rate": [1, 2, 3, 5, 6, 7, 8,9 , 10, 1], "lie": int(lie)})
+            new_row = pd.DataFrame({"image": filepath, "heart_rate":heart_rate, "lie": int(lie)}, index=[len(dataset)])
             dataset.add_row(new_row)
 
             time.sleep(0.1)
@@ -88,5 +95,5 @@ def change_rec_condition(condition):
 
 
 
-
-app.run(host = '127.0.0.1', port=8080)
+if __name__ == "__main__":
+    app.run(host = '127.0.0.1', port=8080)
