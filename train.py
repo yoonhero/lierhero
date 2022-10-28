@@ -13,9 +13,10 @@ def train_loop(dataloader, model, loss_fn, optimizer):
 
     for batch, (X, y) in enumerate(dataloader):
         landmark, heart_rate = X
+
         pred = model(landmark, heart_rate)
         loss = loss_fn(pred, y)
-
+        
         # BackPropagation
         optimizer.zero_grad()
         loss.backward()
@@ -51,7 +52,7 @@ def main():
     test_size = dataset_size - train_size
     # validation_size = dataset_size - train_size - validation_size
 
-    train_dataset, validation_dataset, test_dataset = random_split(dataset, [train_size, test_size])
+    train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 
     train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True, drop_last=True)
     # validation_dataloader = DataLoader(validation_dataset, batch_size=4, shuffle=True, drop_last=True)
@@ -71,14 +72,16 @@ def main():
     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
     for epoch in range(1, n_epochs):
-        print(f"Epoch {epoch+1}\n-------------------------------")
+        print(f"Epoch {epoch}\n-------------------------------")
         train_loop(train_dataloader, model, loss_fn, optimizer)
         test_loop(test_dataloader, model, loss_fn)
 
     print("Done!")
 
     PATH = "./weights"
-    torch.save(model, os.path.join(PATH, "model.pt"))
+    if not os.path.exists(PATH):
+        os.makedirs(PATH)
+    torch.save(model, os.path.join(PATH, "model2.pt"))
 
     #     torch.save({
     #     'model': model.state_dict(),

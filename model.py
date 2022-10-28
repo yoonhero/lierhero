@@ -21,12 +21,16 @@ class LierDetectModel(nn.Module):
 
         self.image_features_ = nn.Sequential(
         nn.Linear(478*3, 400),
-        nn.ReLU(),
+        nn.LeakyReLU(),
+        nn.Linear(400, 400),
+        nn.LeakyReLU(),
         nn.Linear(400, 200),
-        nn.ReLU(),
+        nn.LeakyReLU(),
          nn.Linear(200, 100),
-         nn.ReLU(),
-        nn.Linear(100, 5),
+         nn.LeakyReLU(),
+         nn.Linear(100, 50),
+         nn.LeakyReLU(),
+        nn.Linear(50, 10),
         )
 
         ## TODO: RNN Numeric features
@@ -37,7 +41,7 @@ class LierDetectModel(nn.Module):
         )
     
         self.combined_featuers_ = nn.Sequential(
-            nn.Linear(10, 1),
+            nn.Linear(15, 1),
             nn.Sigmoid()
         )
 

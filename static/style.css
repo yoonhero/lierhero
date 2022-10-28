@@ -4,6 +4,7 @@
 
 main {
     width: 100vw;
+    min-height: 100vh;
     background-color: #eff5f7;
 }
 
@@ -27,11 +28,11 @@ main {
 }
 
 
-
-img {
+.video{
     width: 80%;
-    max-width: 640px;
-    border-radius: 30px;
+    max-width: 860px;
+    border-radius: 40px;
+    padding: 1rem;
 }
 
 .btn_container {
