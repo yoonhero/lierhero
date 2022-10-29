@@ -36,10 +36,10 @@ def test_loop(dataloader, model, loss_fn):
         for (landmark, heart_rate), y in dataloader:
             pred = model(landmark, heart_rate)
             test_loss += loss_fn(pred, y).item()
-            correct += (pred.argmax(1) == y).type(torch.float).sum().item()
+            correct += (pred >= torch.FloatTensor([0.5])).float().sum().item()
 
     test_loss /= num_batches
-    correct /= size
+    correct /= size * num_batches
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 
@@ -54,7 +54,7 @@ def main():
 
     train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 
-    train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True, drop_last=True)
+    train_dataloader = DataLoader(train_dataset, batch_size=8, shuffle=True, drop_last=True)
     # validation_dataloader = DataLoader(validation_dataset, batch_size=4, shuffle=True, drop_last=True)
     test_dataloader = DataLoader(test_dataset, batch_size=4, shuffle=True, drop_last=True)
 
@@ -81,7 +81,7 @@ def main():
     PATH = "./weights"
     if not os.path.exists(PATH):
         os.makedirs(PATH)
-    torch.save(model, os.path.join(PATH, "model2.pt"))
+    torch.save(model, os.path.join(PATH, "model_v1.pt"))
 
     #     torch.save({
     #     'model': model.state_dict(),

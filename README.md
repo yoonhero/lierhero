@@ -26,10 +26,9 @@ I made the UI for data collecting using Flask webpage. This webpage is quite sim
 
 ## Model Training
 
-I made simple Linear Net with Pytorch. I will experiment many type of models to improve the performance. 
-
-
 <strong>MODEL V1</strong>
+
+I made simple Linear Net with Pytorch. I will experiment many type of models to improve the performance. 
 
 ![model_v1](https://github.com/yoonhero/lierhero/blob/master/docs/model_v1.png?raw=true)
 

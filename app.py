@@ -4,6 +4,7 @@ from flask import (
 import time
 from collect_data import DataSet, get_timestamp
 from utils import LineChart, create_directory
+from arduino import ArduinoInput, get_usb_device
 from webcam import Webcam
 import math
 import cv2
@@ -21,6 +22,7 @@ cam = Webcam(0, WIDTH, HEIGHT)
 rec_condition = False
 lie = False
 
+sensor = ArduinoInput(get_usb_device()[-1])
 
 
 def generate_frames():
@@ -28,6 +30,7 @@ def generate_frames():
         global rec_condition
         global lie
         global dataset
+        global sensor
             
         ## read the camera frame
         frame = cam.get_image()
@@ -42,9 +45,14 @@ def generate_frames():
             cv2.imwrite(filepath, frame)
 
 
-            ## TODO: Heart Rate
-            heart_rate = [240, 230, 250, 210, 220, 230, 250,285 , 270, 250]
-            heart_rate = "|".join([str(v) for v in heart_rate])
+            sensor_values = []
+            for _ in range(10):
+                v = sensor.get_data()
+                sensor_values.append(int(v))
+                ## TODO: Chart
+                time.sleep(0.1)
+
+            heart_rate = "|".join([str(v) for v in sensor_values])
 
             new_row = pd.DataFrame({"image": filepath, "heart_rate":heart_rate, "lie": int(lie)}, index=[len(dataset)])
             dataset.add_row(new_row)

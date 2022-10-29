@@ -19,9 +19,10 @@ class FaceLandmarksDatasetWithMediapipe(Dataset):
         self.data_csv = pd.read_csv(csv_file)
 
         # TODO: Transform Image
-        # transform = transforms(
-
-        # )
+        # transform = transforms.Compose([
+        #     transforms.ToTensor(),
+        #     transforms.Normalize(mean, std)
+        # ])
 
         mp_face_mesh = mp.solutions.face_mesh
         self.face_detector = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1, refine_landmarks=True, min_detection_confidence=0.2)
@@ -36,17 +37,12 @@ class FaceLandmarksDatasetWithMediapipe(Dataset):
         img_name = self.data_csv["image"].values[idx]  
         image = cv2.imread(img_name)
 
-        print(img_name)
-
         temp_landmark = self.face_detector.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         try:
-            np_landmark = np.array([[landmark.x, landmark.y, landmark.z] for landmark in list(temp_landmark.multi_face_landmarks[0].landmark)])
-            tensor_landmark = torch.from_numpy(np_landmark, dtype=np.float32)
-            print(tensor_landmark)
+            tensor_landmark = torch.tensor([[landmark.x, landmark.y, landmark.z] for landmark in list(temp_landmark.multi_face_landmarks[0].landmark)], dtype=torch.float32)
+        
         except TypeError:
             tensor_landmark = torch.zeros((478, 3), dtype=torch.float32)
-
-        # print(tensor_landmark)
 
 
         rear_heart_rate = [int(v) for v in self.data_csv["heart_rate"][idx].split("|")]
