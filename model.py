@@ -15,7 +15,7 @@ import numpy as np
 
 #         )
 
-class LierDetectModel(nn.Module):
+class LierDetectModel_v1(nn.Module):
     def __init__(self):
         super().__init__()
 

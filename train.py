@@ -1,5 +1,5 @@
 from dataset import FaceLandmarksDatasetWithMediapipe
-from model import LierDetectModel
+from model import LierDetectModel_v1 as LierDetectModel
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
