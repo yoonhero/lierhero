@@ -32,3 +32,13 @@ I made simple Linear Net with Pytorch. I will experiment many type of models to 
 
 ![model_v1](https://github.com/yoonhero/lierhero/blob/master/docs/model_v1.png?raw=true)
 
+
+
+
+<strong>MODEL V2</strong>
+
+I made Neural Network with Convolutional Network becauase linear net doesn't reflect the facial expresssion emotion. But this network doesn't working well too...
+
+
+![model_v2](https://github.com/yoonhero/lierhero/blob/master/docs/model_v2.png?raw=true)
+

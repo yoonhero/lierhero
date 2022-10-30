@@ -5,15 +5,62 @@ import torch.nn.functional as F
 import numpy as np
 
 
-## TODO: Conv Net
-# class LierDetectModelWithCNN(nn.Module):
-#     def __init__(self):
-#         super().__init__()
+# TODO: Conv Net
+class LierDetectModelWithCNN(nn.Module):
+    def __init__(self):
+        super().__init__()
 
-#         self.image_features_ = nn.Sequential(
-#             nn.Conv2d(in_channels=3, out_channels=16, kernel_size=9, padding=4),
+        self.image_features_ = nn.Sequential(
+            nn.Conv1d(in_channels=3, out_channels=16, kernel_size=6, stride=2, padding=0),
 
-#         )
+            nn.Conv1d(in_channels=16, out_channels=32, kernel_size=6, stride=2, padding=0),
+            nn.Conv1d(in_channels=32, out_channels=64, kernel_size=6, stride=2, padding=0),
+            nn.Conv1d(in_channels=64, out_channels=128, kernel_size=6, stride=2, padding=0),
+            
+        )
+
+        self.dropout = nn.Dropout(0.5)
+
+        self.image_linear = nn.Sequential(
+            nn.Linear(128*26, 128),
+            nn.ReLU(), 
+            nn.Linear(128, 10),
+            nn.ReLU(),
+        )
+
+        
+
+        self.numeric_features_ = nn.Sequential(
+            nn.Linear(10,5),
+            nn.ReLU(),
+            nn.Linear(5, 5),
+            nn.ReLU(),
+        )
+
+        self.combined_featuers_ = nn.Sequential(
+            nn.Linear(15, 1),
+            nn.Sigmoid()
+        )
+
+
+    def forward(self, x1, x2):
+        # x1 = x1.reshape(x1.shape[0], 3, -1)
+
+        out1 = self.image_features_(x1)
+        out1 = torch.flatten(out1, 1)
+        print(out1.shape)
+        out1 = self.dropout(out1)
+        out1 = self.image_linear(out1)
+        out2 = self.numeric_features_(x2)
+
+        x = torch.cat((out1, out2), 1)
+
+        out = self.combined_featuers_(x)
+
+        return out
+
+
+
 
 class LierDetectModel_v1(nn.Module):
     def __init__(self):

@@ -38,7 +38,7 @@ with mp_face_mesh.FaceMesh(
 
         temp_landmark = face_mesh.process(image)
         try:
-            tensor_landmark = torch.tensor([[[landmark.x, landmark.y, landmark.z] for landmark in list(temp_landmark.multi_face_landmarks[0].landmark)]], dtype=torch.float32)
+            tensor_landmark = torch.tensor([[landmark.x, landmark.y, landmark.z] for landmark in list(temp_landmark.multi_face_landmarks[0].landmark)], dtype=torch.float32)
         except: 
             tensor_landmark = torch.randn((1, 478, 3))
         # sensor_values = []
@@ -48,7 +48,7 @@ with mp_face_mesh.FaceMesh(
         #     time.sleep(0.1)
 
         
-        x1 = tensor_landmark
+        x1 = tensor_landmark.unsqueeze(0)
        # x2 = torch.tensor([sensor_values], dtype=torch.float32)
         x2 = torch.randn((1, 10), dtype=torch.float32)
 
