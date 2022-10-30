@@ -2,8 +2,6 @@
 
 A lie detector based on Pytorch for a 2022 R&E school project.
 
-![model_v1](https://github.com/yoonhero/lierhero/blob/master/docs/model_v1.png?raw=true)
-
 ## Introduction
 
 ![lie detector](https://img.fruugo.com/product/1/88/138417881_max.jpg)
