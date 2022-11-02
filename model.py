@@ -104,6 +104,63 @@ class LierDetectModel_v1(nn.Module):
 
 
 
+# Linear Model with BatchNormalization and Linear
+class LierDetectModel_v2(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        self.image_features_ = nn.Sequential(
+            nn.BatchNorm1d(473*3),
+            nn.Linear(478*3, 400),
+            nn.LeakyReLU(),
+            nn.BatchNorm1d(400),
+            nn.Dropout(0.3),
+            nn.Linear(400, 400),
+            nn.LeakyReLU(),
+            nn.BatchNorm1d(400),
+            nn.Dropout(0.3),
+            nn.Linear(400, 400),
+            nn.LeakyReLU(),
+            nn.BatchNorm1d(400),
+            nn.Dropout(0.3),
+            nn.Linear(400, 100),
+            nn.LeakyReLU(),
+            nn.BatchNorm1d(100),
+            nn.Dropout(0.3),
+            nn.Linear(100, 50),
+            nn.LeakyReLU(),
+            nn.BatchNorm1d(50),
+            nn.Dropout(0.3),
+            nn.Linear(50, 10),
+        )
+
+        ## TODO: RNN Numeric features
+        self.numeric_features_ = nn.Sequential(
+            nn.BatchNorm1d(10),
+            nn.Linear(10,5),
+            nn.ReLU(),
+            nn.BatchNorm1d(5),
+            nn.Dropout(0.3),
+            nn.Linear(5, 5),
+        )
+    
+        self.combined_featuers_ = nn.Sequential(
+            nn.Linear(15, 1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x1, x2):
+        x1 = torch.flatten(x1, start_dim=1)
+        x1 = self.image_features_(x1)
+        x2 = self.numeric_features_(x2)
+
+        x = torch.cat((x1, x2), 1)
+        x = self.combined_featuers_(x)
+
+        return x
+
+
+
 
 
 
