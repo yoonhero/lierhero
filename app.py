@@ -117,6 +117,11 @@ def change_rec_condition(condition):
         return jsonify({"message":"Fail to change recording status.."})
 
 
+@app.route("/visualize", methods=["GET"])
+def visualize():
+    visualize_chart.visualize("Time", "Heart Rate")
+
+
 
 if __name__ == "__main__":
     app.run(host = '127.0.0.1', port=8080)
