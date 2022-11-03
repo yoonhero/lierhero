@@ -1,12 +1,13 @@
-from dataset import FaceLandmarksDatasetWithMediapipe
-from model import LierDetectModel_v2 as LierDetectModel
-from model import LierDetectModelWithCNN as CNN_MODEL
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 import os
 import torchsummary
 # from torchviz import make_dot
+
+from .dataset import FaceLandmarksDatasetWithMediapipe
+from .model import LierDetectModel_v2 as LierDetectModel
+from .model import LierDetectModelWithCNN as CNN_MODEL
 
 
 def train_loop(dataloader, model, loss_fn, optimizer):
