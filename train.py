@@ -1,5 +1,5 @@
 from dataset import FaceLandmarksDatasetWithMediapipe
-from model import LierDetectModel_v1 as LierDetectModel
+from model import LierDetectModel_v2 as LierDetectModel
 from model import LierDetectModelWithCNN as CNN_MODEL
 import torch
 import torch.nn as nn
@@ -168,4 +168,4 @@ def main_v2():
 
 
 if __name__ == "__main__":
-    main_v2()
+    main_v1()
