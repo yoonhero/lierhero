@@ -1,27 +1,27 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib as mpl
-import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 import os
 
 class LineChart(object):
-    def __init__(self):
-        self.x = np.array([], dtype=np.int64)
-        self.y = np.array([], dtype=np.int64)
+    def __init__(self, title):
+        self.x = np.array([], dtype=np.float32)
+        self.y = np.array([], dtype=np.float32)
+
+        self.fig = plt.figure(figtitle=title)
+        self.ax = self.fig.subplots()
 
     def add_value(self, x, y):
         self.x = np.append(self.x, x)
         self.y = np.append(self.y, y)
 
-    def visualize(self):
-        plt.rc('font', family='NanumMyeongjo')
-        plt.rcParams["font.size"] = 12
+    def visualize(self, x_label, y_label):
+        # plt.rcParams["font.size"] = 12
+        plt.ylabel(y_label)
+        plt.xlabel(x_label)
 
-        plt.ylabel('Heart Rate')
-        plt.xlabel('Timestamp')
-
-        plt.plot(self.x, self.y)
-        plt.show()
+        self.ax.plot(self.x, self.y)
+        self.ax.savefig("flot.png", bbox_inches="tight")
 
 
 
