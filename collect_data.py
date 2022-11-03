@@ -12,38 +12,8 @@ import cv2
 import os
 
 
-def get_timestamp():
-    dt = datetime.now()
 
-    ts = datetime.timestamp(dt)
-
-    return ts
-
-
-
-class DataSet(object):
-    def __init__(self, data_path=""):
-        if data_path == "":
-            self.dataframe = pd.DataFrame(columns = ['image', 'heart_rate', 'lie'])
-        else:
-            self.dataframe = pd.read_csv(data_path)
-
-    def load(self, filepath):
-        self.dataframe = pd.read_csv(filepath)
-
-    def add_row(self, row:dict):
-        self.dataframe = pd.concat([self.dataframe, row])
-
-    def show_data(self):
-        return self.dataframe
-
-    def save(self, filename):
-        self.dataframe.to_csv(filename, index=False)
-
-    def __len__(self):
-        return len(self.dataframe)
-
-
+# OLD
 class CollectDataTool():    
     WIDTH, HEIGHT = (680, 400)
     def __init__(self):

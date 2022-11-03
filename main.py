@@ -1,12 +1,11 @@
 import torch 
 import cv2
 import mediapipe as mp
-from arduino import ArduinoInput, get_usb_device
-import time
+
+from .arduino import ArduinoInput, get_usb_device
 
 
 # TODO: Implementation Prediction
-
 cap = cv2.VideoCapture(0)
 
 mp_face_mesh = mp.solutions.face_mesh

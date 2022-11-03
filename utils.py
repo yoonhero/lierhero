@@ -1,32 +1,17 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
 import os
+from datetime import datetime
 
-class LineChart(object):
-    def __init__(self, title:str):
-        self.x = np.array([], dtype=np.float32)
-        self.y = np.array([], dtype=np.float32)
+def get_timestamp():
+    dt = datetime.now()
 
-        self.fig = plt.figure(figtitle=title)
-        self.ax = self.fig.subplots()
+    ts = datetime.timestamp(dt)
 
-    def add_value(self, x:float, y:float):
-        self.x = np.append(self.x, x)
-        self.y = np.append(self.y, y)
-
-    def visualize(self, x_label:str, y_label:str):
-        # plt.rcParams["font.size"] = 12
-        plt.ylabel(y_label)
-        plt.xlabel(x_label)
-
-        self.ax.plot(self.x, self.y)
-        self.ax.savefig("flot.png", bbox_inches="tight")
+    return ts
 
 
-def create_directory():
-    if not os.path.exists("./dataset"):
-        os.makedirs("./dataset")
-        os.makedirs("./dataset/lie")
-        os.makedirs("./dataset/not_lie")
+def create_directory(directories):
+    for directory in directories:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
             

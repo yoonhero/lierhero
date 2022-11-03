@@ -6,12 +6,34 @@ from PIL import Image
 import numpy as np
 from skimage import io
 import cv2
-
 import os
-
 # import face_alignment
-
 import mediapipe as mp
+
+
+class CustomDataFrame(object):
+    def __init__(self, data_path=""):
+        if data_path == "":
+            self.dataframe = pd.DataFrame(columns = ['image', 'heart_rate', 'lie'])
+        else:
+            self.dataframe = pd.read_csv(data_path)
+
+    def load(self, filepath):
+        self.dataframe = pd.read_csv(filepath)
+
+    def add_row(self, row:dict):
+        self.dataframe = pd.concat([self.dataframe, row])
+
+    def show_data(self):
+        return self.dataframe
+
+    def save(self, filename):
+        self.dataframe.to_csv(filename, index=False)
+
+    def __len__(self):
+        return len(self.dataframe)
+
+
 
 
 def dataprocessing_get_landmarks(csv_file):
@@ -32,7 +54,7 @@ def dataprocessing_get_landmarks(csv_file):
         
         except TypeError:
             print(f"Error When Reading Face Mesh.\nSource: {image_path}")
-            np_landmark = np.zeros((478, 3), dtype=torch.float32)
+            np_landmark = np.zeros((478, 3), dtype=np.float32)
 
         # Restore =>>> a = [[float(l[0]), float(l[1]), float(l[2])] for l in [landmarks.split("-") for landmarks in landmark.split("|")]]
         landmark = "|".join(["-".join([str(v[0]), str(v[1]), str(v[2])]) for v in np_landmark])

@@ -2,18 +2,21 @@ from flask import (
     Flask, render_template,jsonify, Response
 )
 import time
-from collect_data import DataSet, get_timestamp
-from utils import LineChart, create_directory
-from arduino import ArduinoInput, get_usb_device
-from webcam import Webcam
 import math
 import cv2
 import pandas as pd
 import numpy as np
 
+from .dataset import CustomDataFrame
+from .charts import LineChart
+from .utils import get_timestamp, create_directory
+from .arduino import ArduinoInput, get_usb_device
+from .webcam import Webcam
+
+
 app = Flask(__name__)
 
-dataset = DataSet()
+dataset = CustomDataFrame()
 
 WIDTH, HEIGHT = (1080, 760)
 cam = Webcam(0, WIDTH, HEIGHT)
@@ -24,6 +27,8 @@ lie = False
 sensor = ArduinoInput(get_usb_device()[-1])
 
 visualize_chart = LineChart("Heart Rate Sensor Tracking")
+
+directories = ["./dataset", "./dataset/lie", "./dataset/not_lie"]
 
 
 ## Generate Frame And Processing Frame when Webcam source IN.
@@ -42,7 +47,7 @@ def generate_frames():
             ts = math.floor(get_timestamp())
 
             # if directory is empty and create it.
-            create_directory()
+            create_directory(directories)
             
             filepath = f"./dataset/lie/{ts}.jpg" if lie else f"./dataset/not_lie/{ts}.jpg"
 
@@ -56,7 +61,6 @@ def generate_frames():
             for _ in range(10):
                 v = sensor.get_data()
                 sensor_values.append(int(v))
-                # TODO: Chart
                 time.sleep(0.1)
 
             # Append Mean of the 10 sensor values
