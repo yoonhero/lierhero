@@ -14,6 +14,38 @@ import os
 import mediapipe as mp
 
 
+def dataprocessing_get_landmarks(csv_file):
+    mp_face_mesh = mp.solutions.face_mesh
+    face_detector = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1, refine_landmarks=True, min_detection_confidence=0.4)
+
+
+    data = pd.read_csv(csv_file)
+    new_row = np.array([], dtype=np.float32)
+
+
+    for idx, image_path in enumerate(data["image"]):
+        input_image = cv2.imread(image_path)
+        temp_landmark = face_detector.process(cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB))
+
+        try:
+            np_landmark = np.array([[landmark.x, landmark.y, landmark.z] for landmark in list(temp_landmark.multi_face_landmarks[0].landmark)], dtype=np.float32)
+        
+        except TypeError:
+            print(f"Error When Reading Face Mesh.\nSource: {image_path}")
+            np_landmark = np.zeros((478, 3), dtype=torch.float32)
+
+        # Restore =>>> a = [[float(l[0]), float(l[1]), float(l[2])] for l in [landmarks.split("-") for landmarks in landmark.split("|")]]
+        landmark = "|".join(["-".join([str(v[0]), str(v[1]), str(v[2])]) for v in np_landmark])
+
+        new_row.append(landmark)
+
+    temp_df = pd.DataFrame(new_row, columns=["landmarks"])
+
+    result = pd.concat([data, temp_df], axis=1)
+
+    result.to_csv("processed_dataset.csv")
+
+
 class FaceLandmarksDatasetWithMediapipe(Dataset):
     def __init__(self, csv_file):
         self.data_csv = pd.read_csv(csv_file)
@@ -25,7 +57,7 @@ class FaceLandmarksDatasetWithMediapipe(Dataset):
         # ])
 
         mp_face_mesh = mp.solutions.face_mesh
-        self.face_detector = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1, refine_landmarks=True, min_detection_confidence=0.2)
+        self.face_detector = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1, refine_landmarks=True, min_detection_confidence=0.4)
 
     def __len__(self):
         return len(self.data_csv)
@@ -42,6 +74,7 @@ class FaceLandmarksDatasetWithMediapipe(Dataset):
             tensor_landmark = torch.tensor([[landmark.x, landmark.y, landmark.z] for landmark in list(temp_landmark.multi_face_landmarks[0].landmark)], dtype=torch.float32)
         
         except TypeError:
+            print(f"Error When Reading Face Mesh.\nSource: {img_name}")
             tensor_landmark = torch.zeros((478, 3), dtype=torch.float32)
 
 
@@ -98,7 +131,7 @@ class WithFaceLandmarksDataset(Dataset):
 
 
 
-def dataprocessing_get_landmarks(csv_file):
+def dataprocessing_get_landmarks_prev(csv_file):
     data = pd.read_csv(csv_file)
 
     new_row = np.array([], dtype=np.float32)
