@@ -1,9 +1,8 @@
 import cv2
 import time
 
-
 class Webcam():
-    def __init__(self, device, width, height):
+    def __init__(self, device:int, width:int, height:int):
         self.cap = cv2.VideoCapture(device)
         self.WIDTH = width
         self.HEIGHT = height
@@ -20,8 +19,9 @@ class Webcam():
         if self.cap.isOpened():
             ret, frame = self.cap.read()
 
-            if ret:
-                return frame
+            assert ret, "Problem when reading WebCam"
+            
+            return frame
 
     def stop(self):
         self.cap.release()
