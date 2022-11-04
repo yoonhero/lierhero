@@ -110,7 +110,7 @@ class LierDetectModel_v2(nn.Module):
         super().__init__()
 
         self.image_features_ = nn.Sequential(
-            nn.BatchNorm1d(473*3),
+            nn.BatchNorm1d(478*3),
             nn.Linear(478*3, 400),
             nn.LeakyReLU(),
             nn.BatchNorm1d(400),

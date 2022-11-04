@@ -2,7 +2,7 @@ import torch
 import cv2
 import mediapipe as mp
 
-from .arduino import ArduinoInput, get_usb_device
+from arduino import ArduinoInput, get_usb_device
 
 
 # TODO: Implementation Prediction

@@ -7,7 +7,7 @@ class LineChart(object):
         self.x = np.array([], dtype=np.float32)
         self.y = np.array([], dtype=np.float32)
 
-        self.fig = plt.figure(figtitle=title)
+        self.fig = plt.figure()
         self.ax = self.fig.subplots()
 
     def add_value(self, x:float, y:float):

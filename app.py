@@ -7,11 +7,11 @@ import cv2
 import pandas as pd
 import numpy as np
 
-from .dataset import CustomDataFrame
-from .charts import LineChart
-from .utils import get_timestamp, create_directory
-from .arduino import ArduinoInput, get_usb_device
-from .webcam import Webcam
+from dataset import CustomDataFrame
+from charts import LineChart
+from utils import get_timestamp, create_directory
+from arduino import ArduinoInput, get_usb_device
+from webcam import Webcam
 
 
 app = Flask(__name__)
@@ -53,18 +53,22 @@ def generate_frames():
 
             cv2.imwrite(filepath, frame)
 
+            print("Image Write!")
+
             # if lie:
             #     sensor_values = [60, 70, 80, 100, 90, 100, 80, 78, 75, 74]
             # else:
             #     sensor_values = [5, 6, 1, 2, 4, 6, 7, 9, 1, 10]
-            sensor_values = np.array([], dtype=np.float32)
+            sensor_values = []
             for _ in range(10):
                 v = sensor.get_data()
                 sensor_values.append(int(v))
                 time.sleep(0.1)
 
+            print(f"Sensor! {sensor_values}")
+
             # Append Mean of the 10 sensor values
-            visualize_chart.add_value(sensor_values.mean())
+            visualize_chart.add_value(ts, sum(sensor_values) / len(sensor_values))
 
             heart_rate = "|".join([str(v) for v in sensor_values])
 

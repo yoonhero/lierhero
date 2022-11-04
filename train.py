@@ -3,18 +3,25 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 import os
 import torchsummary
+from torch.utils.tensorboard import SummaryWriter
 # from torchviz import make_dot
 
-from .dataset import FaceLandmarksDatasetWithMediapipe
-from .model import LierDetectModel_v2 as LierDetectModel
-from .model import LierDetectModelWithCNN as CNN_MODEL
+from dataset import FaceLandmarksDatasetWithMediapipe
+from model import LierDetectModel_v2 as LierDetectModel
+from model import LierDetectModelWithCNN as CNN_MODEL
+from utils import create_directory
 
 
 def train_loop(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
+    num_batches = len(dataloader)
+
+    train_loss = 0
 
     for batch, (X, y) in enumerate(dataloader):
         landmark, heart_rate = X
+
+        landmark =landmark.reshape(landmark.shape[0], 3, -1)
 
         pred = model(landmark, heart_rate)
         loss = loss_fn(pred, y)
@@ -24,12 +31,19 @@ def train_loop(dataloader, model, loss_fn, optimizer):
         loss.backward()
         optimizer.step()
 
+        train_loss += loss.item()
+
         if batch % 100 == 0:
-            loss, current = loss.item(), batch * len(X)
-            print(f"loss: {loss:>7f} [{current:>5d}/{size:>5d}]")
+            _loss, current = loss.item(), batch * len(X)
+            print(f"loss: {_loss:>7f} [{current:>5d}/{size:>5d}]")
+
+    train_loss /= num_batches
+    return train_loss
 
 
 def test_loop(dataloader, model, loss_fn):
+    model.eval()
+
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
     test_loss, correct = 0, 0
@@ -42,8 +56,9 @@ def test_loop(dataloader, model, loss_fn):
 
     test_loss /= num_batches
     correct /= size * num_batches
-    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+    # print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
+    return correct 
 
 
 def main_v1():
@@ -62,33 +77,42 @@ def main_v1():
 
 
     n_epochs = 20
-    learning_rate = 0.01
+    learning_rate = 0.0001
 
     model = LierDetectModel()
 
-    # _x = torch.zeros(1, 2, 10)
-    # torchsummary.summary(model, ((3, 784, 1), (10, 1)))
+    # TensorBoard Start
+    writer = SummaryWriter()
+
+    x1 = torch.zeros(1, 478, 3)
+    x1 = x1.reshape(x1.shape[0], 3, -1)
+    x2  = torch.zeros(1, 10)
+
+    writer.add_graph(model, [x1, x2])
+
     print(model)
 
     loss_fn = nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     for epoch in range(1, n_epochs):
-        print(f"Epoch {epoch}\n-------------------------------")
-        train_loop(train_dataloader, model, loss_fn, optimizer)
-        test_loop(test_dataloader, model, loss_fn)
+        running_loss = train_loop(train_dataloader, model, loss_fn, optimizer)
+        accuracy = test_loop(test_dataloader, model, loss_fn)
+        print(f"Epoch [{epoch+1}/{n_epochs}], Loss: {running_loss:.5f}, Accuracy: {accuracy:.5f}")
+
+        writer.add_scalar('training loss', running_loss, epoch+1)
+        writer.add_scalar('test accuracy', accuracy, epoch+1)
+
 
     print("Done!")
 
-    PATH = "./weights"
-    if not os.path.exists(PATH):
-        os.makedirs(PATH)
-    torch.save(model, os.path.join(PATH, "model_v1.pt"))
+    PATH = ["./weights"]
+    create_directory(PATH)
 
-    #     torch.save({
-    #     'model': model.state_dict(),
-    #     'optimizer': optimizer.state_dict()
-    # }, PATH + 'all.tar')
+    torch.save(model, os.path.join(PATH[0], "model_v1.pt"))
+
+    # writer.close()
+
 
 
 def train_loop_v2(dataloader, model, loss_fn, optimizer):
@@ -108,8 +132,11 @@ def train_loop_v2(dataloader, model, loss_fn, optimizer):
         optimizer.step()
 
         if batch % 100 == 0:
-            loss, current = loss.item(), batch * len(X)
-            print(f"loss: {loss:>7f} [{current:>5d}/{size:>5d}]")
+            _loss, current = loss.item(), batch * len(X)
+            print(f"loss: {_loss:>7f} [{current:>5d}/{size:>5d}]")
+
+
+        return loss.item()
 
 
 def test_loop_v2(dataloader, model, loss_fn):
@@ -127,6 +154,9 @@ def test_loop_v2(dataloader, model, loss_fn):
     test_loss /= num_batches
     correct /= size * num_batches
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+
+
+    return correct
 
 
 
@@ -156,9 +186,8 @@ def main_v2():
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     for epoch in range(0, n_epochs):
-        print(f"Epoch {epoch+1}\n-------------------------------")
-        train_loop_v2(train_dataloader, model, loss_fn, optimizer)
-        test_loop_v2(test_dataloader, model, loss_fn)
+        loss = train_loop_v2(train_dataloader, model, loss_fn, optimizer)
+        correct = test_loop_v2(test_dataloader, model, loss_fn)
 
     print("Done!")
 
