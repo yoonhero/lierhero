@@ -48,7 +48,6 @@ class LierDetectModelWithCNN(nn.Module):
 
         out1 = self.image_features_(x1)
         out1 = torch.flatten(out1, 1)
-        print(out1.shape)
         out1 = self.dropout(out1)
         out1 = self.image_linear(out1)
         out2 = self.numeric_features_(x2)

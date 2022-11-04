@@ -16,7 +16,7 @@ from webcam import Webcam
 
 app = Flask(__name__)
 
-dataset = CustomDataFrame()
+dataset = CustomDataFrame("./data.csv")
 
 WIDTH, HEIGHT = (1080, 760)
 cam = Webcam(0, WIDTH, HEIGHT)
@@ -63,7 +63,7 @@ def generate_frames():
             for _ in range(10):
                 v = sensor.get_data()
                 sensor_values.append(int(v))
-                time.sleep(0.1)
+                time.sleep(0.001)
 
             print(f"Sensor! {sensor_values}")
 
@@ -76,7 +76,7 @@ def generate_frames():
             new_row = pd.DataFrame({"image": filepath, "heart_rate":heart_rate, "lie": int(lie)}, index=[len(dataset)])
             dataset.add_row(new_row)
 
-            time.sleep(0.1)
+            time.sleep(0.01)
 
         ret,buffer=cv2.imencode('.jpg',frame)
 

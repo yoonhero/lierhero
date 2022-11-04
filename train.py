@@ -76,8 +76,8 @@ def main_v1():
     test_dataloader = DataLoader(test_dataset, batch_size=4, shuffle=True, drop_last=True)
 
 
-    n_epochs = 20
-    learning_rate = 0.0001
+    n_epochs = 50
+    learning_rate = 0.01
 
     model = LierDetectModel()
 
@@ -109,7 +109,7 @@ def main_v1():
     PATH = ["./weights"]
     create_directory(PATH)
 
-    torch.save(model, os.path.join(PATH[0], "model_v1.pt"))
+    torch.save(model, os.path.join(PATH[0], "model_v1-4.pt"))
 
     # writer.close()
 
@@ -117,6 +117,9 @@ def main_v1():
 
 def train_loop_v2(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
+    num_batches = len(dataloader)
+
+    train_loss = 0
 
     for batch, (X, y) in enumerate(dataloader):
         landmark, heart_rate = X
@@ -131,12 +134,14 @@ def train_loop_v2(dataloader, model, loss_fn, optimizer):
         loss.backward()
         optimizer.step()
 
-        if batch % 100 == 0:
-            _loss, current = loss.item(), batch * len(X)
-            print(f"loss: {_loss:>7f} [{current:>5d}/{size:>5d}]")
+        train_loss += loss.item()
 
+        # if batch % 100 == 0:
+        #     _loss, current = loss.item(), batch * len(X)
+        #     print(f"loss: {_loss:>7f} [{current:>5d}/{size:>5d}]")
 
-        return loss.item()
+    train_loss /= num_batches
+    return train_loss
 
 
 def test_loop_v2(dataloader, model, loss_fn):
@@ -176,9 +181,17 @@ def main_v2():
 
 
     n_epochs = 20
-    learning_rate = 0.01
+    learning_rate = 0.1
 
     model = CNN_MODEL()
+
+    writer = SummaryWriter()
+
+    x1 = torch.zeros(1, 478, 3)
+    x1 = x1.reshape(x1.shape[0], 3, -1)
+    x2  = torch.zeros(1, 10)
+
+    writer.add_graph(model, [x1, x2])
 
     print(model)
 
@@ -186,8 +199,12 @@ def main_v2():
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     for epoch in range(0, n_epochs):
-        loss = train_loop_v2(train_dataloader, model, loss_fn, optimizer)
-        correct = test_loop_v2(test_dataloader, model, loss_fn)
+        running_loss = train_loop_v2(train_dataloader, model, loss_fn, optimizer)
+        accuracy = test_loop_v2(test_dataloader, model, loss_fn)
+        print(f"Epoch [{epoch+1}/{n_epochs}], Loss: {running_loss:.5f}, Accuracy: {accuracy:.5f}")
+
+        writer.add_scalar('training loss', running_loss, epoch+1)
+        writer.add_scalar('test accuracy', accuracy, epoch+1)
 
     print("Done!")
 

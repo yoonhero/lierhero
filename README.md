@@ -2,6 +2,8 @@
 
 A lie detector based on Pytorch for a 2022 R&E school project.
 
+![loss](https://github.com/yoonhero/lierhero/blob/master/docs/all_model.png?raw=true)
+
 ## Introduction
 
 ![lie detector](https://img.fruugo.com/product/1/88/138417881_max.jpg)
@@ -43,6 +45,10 @@ Solution I think.
 I changed some features of the network. And train again it.
 
 ![model_v1-2](https://github.com/yoonhero/lierhero/blob/master/docs/model_v1-2.png?raw=true)
+
+<strong>v1 Model Result</strong>
+
+![loss](https://github.com/yoonhero/lierhero/blob/master/docs/model-v1-result.png?raw=true)
 
 <strong>MODEL V2</strong>
 
