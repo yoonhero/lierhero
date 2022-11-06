@@ -7,7 +7,7 @@ from torch.utils.tensorboard import SummaryWriter
 # from torchviz import make_dot
 
 from dataset import FaceLandmarksDatasetWithMediapipe
-from model import LierDetectModel_v2 as LierDetectModel
+from model import LierDetectModel_v3 as LierDetectModel
 from model import LierDetectModelWithCNN as CNN_MODEL
 from utils import create_directory
 
